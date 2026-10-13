@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#F6F6F6;font-family:Inter,system-ui,-apple-system,sans-serif;color:#111111;-webkit-font-smoothing:antialiased}
+a{color:#E86A10;text-decoration:none}
+a:hover{color:#FF914A}
+button,input,textarea{font-family:inherit;font-size:14px}
+button{cursor:pointer}
+*:focus-visible{outline:2px solid rgba(255,127,35,.4);outline-offset:2px}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:100%;cursor:col-resize}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#DEDEDE;border-radius:8px;border:3px solid #fff}
+::-webkit-scrollbar-track{background:transparent}
+@keyframes pvStatus{0%{opacity:0;transform:translateY(4px)}14%{opacity:1;transform:none}82%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-4px)}}
+</style>
+</helmet>
+<div style="--acc:{{ accent }};--pw:{{ panelW }};height:100vh;display:flex;flex-direction:column;overflow:hidden;background:#F6F6F6">
+
+  <header style="flex:none;height:56px;background:#FFFFFF;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;justify-content:space-between;padding:0 16px 0 24px">
+    <div style="font-size:18px;font-weight:600;letter-spacing:-0.01em">Pavilion</div>
+
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px">
+      <button title="Help" style="width:32px;height:32px;display:grid;place-items:center;border:none;background:transparent;border-radius:8px;color:#6B6B6B" style-hover="background:#FFF1E6;color:#E86A10">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="7.25"></circle><path d="M8.1 7.7c.1-1.1 1-1.8 2-1.8 1.1 0 1.9.7 1.9 1.7 0 .9-.5 1.3-1.3 1.8-.6.4-.7.8-.7 1.4"></path><path d="M10 13.7h.01"></path></svg>
+      </button>
+      <div style="width:32px;height:32px;border-radius:50%;background:#111111;color:#FFFFFF;display:grid;place-items:center;font-size:12px;font-weight:600">MK</div>
+    </div>
+  </header>
+
+  <div style="flex:1;display:flex;min-height:0">
+
+    <aside style="flex:none;width:var(--pw,360px);background:#FFFFFF;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;min-height:0">
+      <div style="flex:1;overflow-y:auto;padding:24px">
+
+        <div style="margin-bottom:24px">
+          <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:10px">Mode</div>
+          <div style="display:flex;gap:2px;background:#F6F6F6;border:1px solid #E6E6E6;border-radius:10px;padding:3px">
+            <button onClick="{{ setModeSet }}" style="{{ segSet }}">Set</button>
+            <button onClick="{{ setModeUnset }}" style="{{ segUnset }}">Unset</button>
+            <button onClick="{{ setModeClean }}" style="{{ segClean }}">CleanUp</button>
+          </div>
+        </div>
+
+        <sc-if value="{{ isSet }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-bottom: 24px">
+          <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:10px">Photo</div>
+          <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ openPicker }}" onDragOver="{{ onDragOver }}" onDragLeave="{{ onDragLeave }}" onDrop="{{ onDrop }}" style="{{ dropStyle }}">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#A8A8A8"><path d="M3 13.5v2a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-2"></path><path d="M10 13V3"></path><path d="M6.2 6.6 10 2.9l3.8 3.7"></path></svg>
+              <div style="margin-top:10px;font-size:14px;color:#111111">Drop a photo or browse</div>
+              <div style="margin-top:2px;font-size:12px;color:#A8A8A8">JPG or PNG</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:12px;height:56px;padding:8px;border:1px solid #E6E6E6;border-radius:12px">
+              <div style="flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;background:repeating-linear-gradient(45deg,#EDEDED 0 6px,#F8F8F8 6px 12px)">
+                <sc-if value="{{ photoUrl }}" hint-placeholder-val="{{ false }}"><img src="{{ photoUrl }}" alt="" style="width:100%;height:100%;object-fit:cover"></sc-if>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ photoName }}</div>
+                <div style="font-size:12px;color:#6B6B6B">Input photo</div>
+              </div>
+              <button onClick="{{ openPicker }}" title="Replace" style="flex:none;width:32px;height:32px;display:grid;place-items:center;border:none;background:transparent;border-radius:8px;color:#6B6B6B" style-hover="background:#FFF1E6;color:#E86A10">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.2a6.5 6.5 0 1 0-1.9 5"></path><path d="M16.8 4.6v4.6h-4.6"></path></svg>
+              </button>
+              <button onClick="{{ removePhoto }}" title="Remove" style="flex:none;width:32px;height:32px;display:grid;place-items:center;border:none;background:transparent;border-radius:8px;color:#6B6B6B" style-hover="background:#FFF1E6;color:#E86A10">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.8 5.8h12.4"></path><path d="M8.2 3.4h3.6"></path><path d="M5.5 5.8l.6 9.4a1.5 1.5 0 0 0 1.5 1.4h4.8a1.5 1.5 0 0 0 1.5-1.4l.6-9.4"></path><path d="M8.6 8.6v5M11.4 8.6v5"></path></svg>
+              </button>
+            </div>
+          </sc-if>
+          <input type="file" accept="image/png,image/jpeg" ref="{{ fileRef }}" onChange="{{ onPickPhoto }}" style="display:none">
+        </div><div style="margin-bottom:24px">
+            
+            
+          </div>
+        </sc-if>
+        <sc-if value="{{ isUnset }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-bottom: 24px">
+          <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:10px">Photo</div>
+          <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ openPicker }}" onDragOver="{{ onDragOver }}" onDragLeave="{{ onDragLeave }}" onDrop="{{ onDrop }}" style="{{ dropStyle }}">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#A8A8A8"><path d="M3 13.5v2a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-2"></path><path d="M10 13V3"></path><path d="M6.2 6.6 10 2.9l3.8 3.7"></path></svg>
+              <div style="margin-top:10px;font-size:14px;color:#111111">Drop a photo or browse</div>
+              <div style="margin-top:2px;font-size:12px;color:#A8A8A8">JPG or PNG</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:12px;height:56px;padding:8px;border:1px solid #E6E6E6;border-radius:12px">
+              <div style="flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;background:repeating-linear-gradient(45deg,#EDEDED 0 6px,#F8F8F8 6px 12px)">
+                <sc-if value="{{ photoUrl }}" hint-placeholder-val="{{ false }}"><img src="{{ photoUrl }}" alt="" style="width:100%;height:100%;object-fit:cover"></sc-if>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ photoName }}</div>
+                <div style="font-size:12px;color:#6B6B6B">Input photo</div>
+              </div>
+              <button onClick="{{ openPicker }}" title="Replace" style="flex:none;width:32px;height:32px;display:grid;place-items:center;border:none;background:transparent;border-radius:8px;color:#6B6B6B" style-hover="background:#FFF1E6;color:#E86A10">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.2a6.5 6.5 0 1 0-1.9 5"></path><path d="M16.8 4.6v4.6h-4.6"></path></svg>
+              </button>
+              <button onClick="{{ removePhoto }}" title="Remove" style="flex:none;width:32px;height:32px;display:grid;place-items:center;border:none;background:transparent;border-radius:8px;color:#6B6B6B" style-hover="background:#FFF1E6;color:#E86A10">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.8 5.8h12.4"></path><path d="M8.2 3.4h3.6"></path><path d="M5.5 5.8l.6 9.4a1.5 1.5 0 0 0 1.5 1.4h4.8a1.5 1.5 0 0 0 1.5-1.4l.6-9.4"></path><path d="M8.6 8.6v5M11.4 8.6v5"></path></svg>
+              </button>
+            </div>
+          </sc-if>
+          <input type="file" accept="image/png,image/jpeg" ref="{{ fileRef }}" onChange="{{ onPickPhoto }}" style="display:none">
+        </div><div style="margin-bottom:24px">
+            
+            
+          </div>
+        </sc-if>
+        <sc-if value="{{ isClean }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-bottom: 24px">
+          <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:10px">Photo</div>
+          <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ openPicker }}" onDragOver="{{ onDragOver }}" onDragLeave="{{ onDragLeave }}" onDrop="{{ onDrop }}" style="{{ dropStyle }}">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#A8A8A8"><path d="M3 13.5v2a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-2"></path><path d="M10 13V3"></path><path d="M6.2 6.6 10 2.9l3.8 3.7"></path></svg>
+              <div style="margin-top:10px;font-size:14px;color:#111111">Drop a photo or browse</div>
+              <div style="margin-top:2px;font-size:12px;color:#A8A8A8">JPG or PNG</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:12px;height:56px;padding:8px;border:1px solid #E6E6E6;border-radius:12px">
+              <div style="flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;background:repeating-linear-gradient(45deg,#EDEDED 0 6px,#F8F8F8 6px 12px)">
+                <sc-if value="{{ photoUrl }}" hint-placeholder-val="{{ false }}"><img src="{{ photoUrl }}" alt="" style="width:100%;height:100%;object-fit:cover"></sc-if>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ photoName }}</div>
+                <div style="font-size:12px;color:#6B6B6B">Input photo</div>
+              </div>
+              <button onClick="{{ openPicker }}" title="Replace" style="flex:none;width:32px;height:32px;display:grid;place-items:center;border:none;background:transparent;border-radius:8px;color:#6B6B6B" style-hover="background:#FFF1E6;color:#E86A10">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.2a6.5 6.5 0 1 0-1.9 5"></path><path d="M16.8 4.6v4.6h-4.6"></path></svg>
+              </button>
+              <button onClick="{{ removePhoto }}" title="Remove" style="flex:none;width:32px;height:32px;display:grid;place-items:center;border:none;background:transparent;border-radius:8px;color:#6B6B6B" style-hover="background:#FFF1E6;color:#E86A10">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.8 5.8h12.4"></path><path d="M8.2 3.4h3.6"></path><path d="M5.5 5.8l.6 9.4a1.5 1.5 0 0 0 1.5 1.4h4.8a1.5 1.5 0 0 0 1.5-1.4l.6-9.4"></path><path d="M8.6 8.6v5M11.4 8.6v5"></path></svg>
+              </button>
+            </div>
+          </sc-if>
+          <input type="file" accept="image/png,image/jpeg" ref="{{ fileRef }}" onChange="{{ onPickPhoto }}" style="display:none">
+        </div><div style="margin-bottom:24px">
+            
+            <p style="margin:0;font-size:12px;line-height:1.5;color:#6B6B6B">Removes dust, scratches and reflections while keeping the piece exactly as it is.</p>
+          </div>
+        </sc-if>
+
+        
+
+        <sc-if value="{{ isUnset }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="margin-bottom:24px">
+              
+              
+              
+              
+            </div>
+            <div style="margin-bottom:24px">
+              <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:10px">Stone cut</div>
+              <div style="position:relative">
+                <button onClick="{{ toggleCut }}" style="{{ cutBtn }}">
+                  <span>{{ cut }}</span>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6B6B6B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5 10 12.5 14 8.5"></path></svg>
+                </button>
+                <sc-if value="{{ cutOpen }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <div onClick="{{ closeMenus }}" style="position:fixed;inset:0;z-index:40"></div>
+                    <div style="position:absolute;z-index:41;top:44px;left:0;right:0;max-height:260px;overflow-y:auto;background:#FFFFFF;border:1px solid #E6E6E6;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.08);padding:4px">
+                      <sc-for list="{{ cuts }}" as="opt" hint-placeholder-count="4">
+                        <button onClick="{{ opt.pick }}" style="{{ opt.style }}">
+                          <span>{{ opt.label }}</span>
+                          <sc-if value="{{ opt.active }}" hint-placeholder-val="{{ false }}">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#E86A10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5 8 14l7.5-8"></path></svg>
+                          </sc-if>
+                        </button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isSet }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-bottom:24px">
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:10px">Necklace</div>
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <button onClick="{{ toggleNecklace }}" role="switch" style="{{ switchTrack }}">
+                <span style="{{ switchKnob }}"></span>
+              </button>
+              <div style="flex:1;padding-top:1px">
+                <div style="font-size:14px">Necklace framing</div>
+                
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ needsMetal }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-bottom:24px">
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:10px">Metal colour</div>
+            <div style="position:relative">
+              <button onClick="{{ toggleMetal }}" style="{{ metalBtn }}">
+                <span>{{ metal }}</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6B6B6B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5 10 12.5 14 8.5"></path></svg>
+              </button>
+              <sc-if value="{{ metalOpen }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <div onClick="{{ closeMenus }}" style="position:fixed;inset:0;z-index:40"></div>
+                  <div style="position:absolute;z-index:41;top:44px;left:0;right:0;background:#FFFFFF;border:1px solid #E6E6E6;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.08);padding:4px">
+                    <sc-for list="{{ metals }}" as="opt" hint-placeholder-count="4">
+                      <button onClick="{{ opt.pick }}" style="{{ opt.style }}">
+                        <span>{{ opt.label }}</span>
+                        <sc-if value="{{ opt.active }}" hint-placeholder-val="{{ false }}">
+                          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#E86A10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5 8 14l7.5-8"></path></svg>
+                        </sc-if>
+                      </button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ needsBg }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-bottom:8px">
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:10px">Background</div>
+
+            <div style="display:flex;gap:2px;background:#F6F6F6;border:1px solid #E6E6E6;border-radius:10px;padding:3px;margin-bottom:16px">
+              <button onClick="{{ bgTabColour }}" style="{{ tabColour }}">Colour</button>
+              <button onClick="{{ bgTabImage }}" style="{{ tabImage }}">Image</button>
+              <button onClick="{{ bgTabAi }}" style="{{ tabAi }}">AI</button>
+            </div>
+
+            <sc-if value="{{ bgIsColour }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;gap:14px;position:relative">
+                <button onClick="{{ pickWhite }}" title="White" style="{{ swWhite }}"><span style="position:absolute;inset:3px;border-radius:50%;background:#FFFFFF;border:1px solid #E6E6E6"></span></button>
+                <button onClick="{{ pickGrey }}" title="Grey" style="{{ swGrey }}"><span style="position:absolute;inset:3px;border-radius:50%;background:#C9C9C9"></span></button>
+                <button onClick="{{ pickBlack }}" title="Black" style="{{ swBlack }}"><span style="position:absolute;inset:3px;border-radius:50%;background:#111111"></span></button>
+                <button onClick="{{ openCustom }}" title="Custom colour" style="{{ swCustom }}">
+                  <span style="position:absolute;inset:3px;border-radius:50%;display:grid;place-items:center;background:{{ customColour }};border:1px solid #E6E6E6">
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#6B6B6B" stroke-width="1.5" stroke-linecap="round"><path d="M10 16.5a6.5 6.5 0 1 1 6.5-6.5c0 1.9-1.3 2.6-2.6 2.6h-1.3c-1 0-1.8.8-1.8 1.8 0 1.2-.3 2.1-.8 2.1Z"></path><path d="M7.3 8.2h.01M10 6.5h.01M12.7 8.2h.01"></path></svg>
+                  </span>
+                </button>
+
+                <sc-if value="{{ customOpen }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <div onClick="{{ closeMenus }}" style="position:fixed;inset:0;z-index:40"></div>
+                    <div style="position:absolute;z-index:41;top:44px;left:0;width:280px;background:#FFFFFF;border:1px solid #E6E6E6;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.08);padding:16px">
+                      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                        <div style="font-size:14px;font-weight:600">Custom colour</div>
+                        <button onClick="{{ closeMenus }}" title="Close" style="width:28px;height:28px;display:grid;place-items:center;border:none;background:transparent;border-radius:8px;color:#6B6B6B" style-hover="background:#FFF1E6;color:#E86A10">
+                          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9"></path></svg>
+                        </button>
+                      </div>
+                      <input type="color" value="{{ customColour }}" onChange="{{ onCustomColour }}" onInput="{{ onCustomColour }}" style="width:100%;height:72px;padding:0;border:1px solid #E6E6E6;border-radius:8px;background:#FFFFFF;cursor:pointer">
+                      <div style="margin-top:12px">
+                        <label style="display:block;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:6px">Hex</label>
+                        <input value="{{ hexField }}" onChange="{{ onHexInput }}" style="width:100%;height:40px;padding:0 12px;border:1px solid #E6E6E6;border-radius:8px;color:#111111;background:#FFFFFF">
+                      </div>
+                      <div style="margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+                        <div>
+                          <label style="display:block;font-size:11px;font-weight:500;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:6px">R</label>
+                          <input value="{{ rVal }}" onChange="{{ onR }}" style="width:100%;height:40px;padding:0 10px;border:1px solid #E6E6E6;border-radius:8px;color:#111111;background:#FFFFFF"></div>
+                        <div>
+                          <label style="display:block;font-size:11px;font-weight:500;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:6px">G</label>
+                          <input value="{{ gVal }}" onChange="{{ onG }}" style="width:100%;height:40px;padding:0 10px;border:1px solid #E6E6E6;border-radius:8px;color:#111111;background:#FFFFFF"></div>
+                        <div>
+                          <label style="display:block;font-size:11px;font-weight:500;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:6px">B</label>
+                          <input value="{{ bVal }}" onChange="{{ onB }}" style="width:100%;height:40px;padding:0 10px;border:1px solid #E6E6E6;border-radius:8px;color:#111111;background:#FFFFFF"></div>
+                      </div>
+                      <button onClick="{{ applyCustom }}" style="margin-top:16px;width:100%;height:40px;border:none;border-radius:8px;background:#111111;color:#FFFFFF;font-size:14px;font-weight:600">Use this colour</button>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+              <p style="margin:12px 0 0;font-size:12px;color:#6B6B6B">{{ bgColourLabel }}</p>
+            </sc-if>
+
+            <sc-if value="{{ bgIsImage }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <sc-if value="{{ noBgImage }}" hint-placeholder-val="{{ true }}">
+                  <div onClick="{{ openBgPicker }}" style="height:96px;border:1px dashed #E6E6E6;border-radius:12px;background:#F6F6F6;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer" style-hover="border-color:#FF7F23;background:#FFF1E6">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#A8A8A8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.75" y="3.75" width="14.5" height="12.5" rx="2"></rect><path d="M3 13l3.6-3.4 3 2.6 2.6-2.4L17 13.4"></path><circle cx="7" cy="7.6" r="1.2"></circle></svg>
+                    <div style="margin-top:8px;font-size:14px">Upload a background</div>
+                    <div style="margin-top:2px;font-size:12px;color:#A8A8A8">JPG or PNG</div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ hasBgImage }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:12px;height:56px;padding:8px;border:1px solid #E6E6E6;border-radius:12px">
+                    <div style="flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;background:repeating-linear-gradient(45deg,#EDEDED 0 6px,#F8F8F8 6px 12px)">
+                      <sc-if value="{{ bgImage }}" hint-placeholder-val="{{ false }}"><img src="{{ bgImage }}" alt="" style="width:100%;height:100%;object-fit:cover"></sc-if>
+                    </div>
+                    <div style="flex:1;min-width:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ bgImageName }}</div>
+                    <button onClick="{{ removeBgImage }}" title="Remove" style="flex:none;width:32px;height:32px;display:grid;place-items:center;border:none;background:transparent;border-radius:8px;color:#6B6B6B" style-hover="background:#FFF1E6;color:#E86A10">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.8 5.8h12.4"></path><path d="M8.2 3.4h3.6"></path><path d="M5.5 5.8l.6 9.4a1.5 1.5 0 0 0 1.5 1.4h4.8a1.5 1.5 0 0 0 1.5-1.4l.6-9.4"></path></svg>
+                    </button>
+                  </div>
+                </sc-if>
+                <input type="file" accept="image/png,image/jpeg" ref="{{ bgFileRef }}" onChange="{{ onPickBg }}" style="display:none">
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ bgIsAi }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <textarea value="{{ aiPrompt }}" onChange="{{ onAiPrompt }}" placeholder="e.g. soft beige linen, warm daylight" rows="3" style="width:100%;padding:10px 12px;border:1px solid #E6E6E6;border-radius:8px;resize:vertical;line-height:1.5;color:#111111;background:#FFFFFF"></textarea>
+                <button onClick="{{ generateBg }}" style="margin-top:10px;width:100%;height:40px;border:1px solid #E6E6E6;border-radius:8px;background:#FFFFFF;color:#111111;font-size:14px;font-weight:600" style-hover="border-color:#111111">Generate background</button>
+                <sc-if value="{{ aiDone }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:16px">
+                    <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B;margin-bottom:10px">Result</div>
+                    <button onClick="{{ pickAiResult }}" style="{{ aiThumb }}">
+                      <span style="position:absolute;inset:0;border-radius:10px;background:repeating-linear-gradient(45deg,#EFEFEF 0 7px,#F7F7F7 7px 14px)"></span>
+                      <span style="position:relative;font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#6B6B6B">ai background</span>
+                    </button>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="flex:none;padding:16px 24px 24px;background:#FFFFFF;border-top:1px solid #E6E6E6">
+        <sc-if value="{{ ctaHint }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0 0 10px;font-size:12px;line-height:1.5;color:#6B6B6B">{{ ctaHint }}</p>
+        </sc-if>
+        <button onClick="{{ generate }}" disabled="{{ ctaDisabled }}" style="{{ ctaStyle }}">{{ ctaLabel }}</button>
+      </div>
+    </aside>
+
+    <main style="flex:1;min-width:0;display:flex;flex-direction:column;background:#F6F6F6;padding:32px 40px 24px;gap:24px;overflow:hidden">
+      <div style="flex:1;min-height:0;display:grid;place-items:center">
+        <div ref="{{ canvasRef }}" onMouseEnter="{{ hoverOn }}" onMouseLeave="{{ hoverOff }}" style="position:relative;height:100%;aspect-ratio:1;max-width:100%;border-radius:12px;border:1px solid #E6E6E6;overflow:hidden;background:#FFFFFF">
+
+          <div style="position:absolute;inset:0;background-image:conic-gradient(#F2F2F2 0 25%,#FFFFFF 0 50%,#F2F2F2 0 75%,#FFFFFF 0);background-size:16px 16px"></div>
+
+          <sc-if value="{{ showEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:40px;background:#FFFFFF">
+              <div style="width:96px;height:96px;border-radius:12px;border:1px dashed #E6E6E6;display:grid;place-items:center">
+                <svg width="28" height="28" viewBox="0 0 20 20" fill="none" stroke="#A8A8A8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.75" y="3.75" width="14.5" height="12.5" rx="2"></rect><path d="M3 13l3.6-3.4 3 2.6 2.6-2.4L17 13.4"></path><circle cx="7" cy="7.6" r="1.2"></circle></svg>
+              </div>
+              <div style="text-align:center">
+                <div style="font-size:14px;color:#6B6B6B">Upload a photo to start</div>
+              </div>
+              <div style="display:flex;gap:32px;flex-wrap:wrap;justify-content:center">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:120px;text-align:center">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#A8A8A8" stroke-width="1.5" stroke-linecap="round"><rect x="2.75" y="2.75" width="14.5" height="14.5" rx="2.5"></rect></svg>
+                  <div style="font-size:12px;color:#6B6B6B">Plain background</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:120px;text-align:center">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#A8A8A8" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="3.6"></circle><path d="M10 2.4v1.8M10 15.8v1.8M2.4 10h1.8M15.8 10h1.8M4.8 4.8l1.3 1.3M13.9 13.9l1.3 1.3M15.2 4.8l-1.3 1.3M6.1 13.9l-1.3 1.3"></path></svg>
+                  <div style="font-size:12px;color:#6B6B6B">Even, soft light</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:120px;text-align:center">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#A8A8A8" stroke-width="1.5" stroke-linecap="round"><path d="M2.75 6.5V4.25a1.5 1.5 0 0 1 1.5-1.5H6.5M13.5 2.75h2.25a1.5 1.5 0 0 1 1.5 1.5V6.5M17.25 13.5v2.25a1.5 1.5 0 0 1-1.5 1.5H13.5M6.5 17.25H4.25a1.5 1.5 0 0 1-1.5-1.5V13.5"></path></svg>
+                  <div style="font-size:12px;color:#6B6B6B">Whole piece in frame</div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showInput }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ inputLayer }}">
+              <sc-if value="{{ photoUrl }}" hint-placeholder-val="{{ false }}">
+                <img src="{{ photoUrl }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
+              </sc-if>
+              <sc-if value="{{ noPhotoUrl }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;display:grid;place-items:center;background:repeating-linear-gradient(45deg,#EDEDED 0 10px,#F7F7F7 10px 20px)">
+                  <div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#6B6B6B;background:#FFFFFF;border:1px solid #E6E6E6;border-radius:8px;padding:8px 12px">uploaded photo</div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showResult }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute;inset:0;background:{{ resultBg }}">
+              <div style="{{ resultClip }}">
+                <div style="position:absolute;inset:0;display:grid;place-items:center;background:repeating-linear-gradient(45deg,#F0F0F0 0 10px,#FAFAFA 10px 20px)">
+                  <div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#6B6B6B;background:#FFFFFF;border:1px solid #E6E6E6;border-radius:8px;padding:8px 12px">result 1500 × 1500</div>
+                </div>
+              </div>
+              <sc-if value="{{ compare }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <div style="position:absolute;inset:0;right:auto;{{ compareLeft }};overflow:hidden;background:repeating-linear-gradient(45deg,#EDEDED 0 10px,#F7F7F7 10px 20px)">
+                    <div style="position:absolute;top:16px;left:16px;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6B6B6B">Before</div>
+                  </div>
+                  <div style="{{ compareBar }}"></div>
+                  <input type="range" min="0" max="100" value="{{ compareX }}" onChange="{{ onCompare }}" onInput="{{ onCompare }}" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:col-resize;margin:0">
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showLasso }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ onCanvasClick }}" onDoubleClick="{{ closeShape }}" style="position:absolute;inset:0;cursor:crosshair">
+              <svg width="100%" height="100%" style="position:absolute;inset:0;overflow:visible">
+                <sc-if value="{{ closed }}" hint-placeholder-val="{{ false }}">
+                  <polygon points="{{ polyPts }}" fill="rgba(217,48,37,0.22)" stroke="#D93025" stroke-width="1.5"></polygon>
+                </sc-if>
+                <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+                  <polyline points="{{ polyPts }}" fill="rgba(217,48,37,0.12)" stroke="#D93025" stroke-width="1.5" stroke-dasharray="4 3"></polyline>
+                </sc-if>
+                <sc-for list="{{ pts }}" as="p" hint-placeholder-count="0">
+                  <circle cx="{{ p.x }}" cy="{{ p.y }}" r="3.5" fill="#FFFFFF" stroke="#D93025" stroke-width="1.5"></circle>
+                </sc-for>
+              </svg>
+              <div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;gap:4px;padding:4px;background:#FFFFFF;border:1px solid #E6E6E6;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.08)">
+                <button onClick="{{ undoPoint }}" style="height:32px;padding:0 12px;display:flex;align-items:center;gap:6px;border:none;background:transparent;border-radius:8px;font-size:14px;color:#111111" style-hover="background:#FFF1E6;color:#E86A10">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 5 4 8.5l3.5 3.5"></path><path d="M4 8.5h7.2a4.3 4.3 0 0 1 0 8.6H8"></path></svg>
+                  Undo
+                </button>
+                <button onClick="{{ resetShape }}" style="height:32px;padding:0 12px;display:flex;align-items:center;gap:6px;border:none;background:transparent;border-radius:8px;font-size:14px;color:#111111" style-hover="background:#FFF1E6;color:#E86A10">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9"></path></svg>
+                  Reset
+                </button>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ generating }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0">
+              <div style="position:absolute;inset:0;background:rgba(255,255,255,0.62)"></div>
+              <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#F6F6F6">
+                <div style="height:100%;background:var(--acc,#FF7F23);transition:width 200ms ease-out;{{ progressW }}"></div>
+              </div>
+              <div style="position:absolute;left:0;right:0;bottom:28px;display:grid;place-items:center">{{ statusEl }}</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showError }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset:0;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;text-align:center">
+              <svg width="28" height="28" viewBox="0 0 20 20" fill="none" stroke="#D93025" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="7.25"></circle><path d="M10 6.2v4.4M10 13.6h.01"></path></svg>
+              <div>
+                <div style="font-size:14px;color:#D93025">That render didn't come through.</div>
+                <p style="margin:4px 0 0;font-size:12px;color:#6B6B6B">Your photo and settings are still here. Try again.</p>
+              </div>
+              <button onClick="{{ generate }}" style="height:40px;padding:0 18px;border:1px solid #E6E6E6;border-radius:8px;background:#FFFFFF;font-size:14px;font-weight:600" style-hover="border-color:#111111">Retry</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showToolbar }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:4px;padding:4px;background:#FFFFFF;border:1px solid #E6E6E6;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.08)">
+              <button style="height:32px;padding:0 12px;display:flex;align-items:center;gap:6px;border:none;background:transparent;border-radius:8px;font-size:14px;color:#111111" style-hover="background:#FFF1E6;color:#E86A10">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v9"></path><path d="M6.2 8.4 10 12.2l3.8-3.8"></path><path d="M3.5 15.5h13"></path></svg>
+                Download
+              </button>
+              <button onClick="{{ toggleCompare }}" style="{{ compareBtn }}">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2.75" y="3.75" width="14.5" height="12.5" rx="2"></rect><path d="M10 3.75v12.5"></path></svg>
+                Compare
+              </button>
+              <button onClick="{{ useAsInput }}" style="height:32px;padding:0 12px;display:flex;align-items:center;gap:6px;border:none;background:transparent;border-radius:8px;font-size:14px;color:#111111" style-hover="background:#FFF1E6;color:#E86A10">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.2a6.5 6.5 0 1 0-1.9 5"></path><path d="M16.8 4.6v4.6h-4.6"></path></svg>
+                Use as input
+              </button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="flex:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B6B">History</div>
+          <sc-if value="{{ hasGallery }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:12px;color:#6B6B6B">{{ galleryCount }}</div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ hasGallery }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;gap:12px;overflow-x:auto;padding:2px 2px 8px">
+            <sc-for list="{{ gallery }}" as="g" hint-placeholder-count="5">
+              <button onClick="{{ g.pick }}" style="{{ g.style }}">
+                <span style="position:absolute;inset:0;border-radius:8px;overflow:hidden;background:repeating-linear-gradient(45deg,#EDEDED 0 7px,#F8F8F8 7px 14px)"></span>
+                <span style="{{ g.badge }}">{{ g.mode }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noGallery }}" hint-placeholder-val="{{ false }}">
+          <div style="height:80px;display:flex;align-items:center;font-size:12px;color:#A8A8A8">Your generations will appear here</div>
+        </sc-if>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF7F23&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#FF7F23&quot;,&quot;#E8590C&quot;,&quot;#111111&quot;,&quot;#7A5CFF&quot;],&quot;section&quot;:&quot;Brand&quot;},&quot;defaultMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Set&quot;,&quot;options&quot;:[&quot;Set&quot;,&quot;Unset&quot;,&quot;CleanUp&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Behaviour&quot;}}">
+const CUTS = ['Round','Oval','Princess','Cushion','Emerald','Asscher','Pear','Marquise','Radiant','Heart','Baguette'];
+const METALS = ['Keep original','Yellow','White','Rose'];
+const PHASES = ['Analysing piece…','Retouching metal…','Composing shot…'];
+const BG_HEX = { White:'#FFFFFF', Grey:'#C9C9C9', Black:'#111111' };
+
+class Component extends DCLogic {
+  state = {
+    mode: this.props.defaultMode || 'Set',
+    photoUrl: null,
+    photoName: 'ring-emerald-01.jpg',
+    hasPhoto: true,
+    dragOver: false,
+    necklace: false,
+    metal: 'Keep original',
+    cut: 'Round',
+    menu: null,
+    bgTab: 'Colour',
+    bgColour: 'White',
+    customColour: '#EADCCB',
+    hexField: '#EADCCB',
+    bgImage: null,
+    bgImageName: null,
+    aiPrompt: '',
+    aiDone: false,
+    pts: [],
+    closed: false,
+    status: 'result',
+    progress: 0,
+    phase: 0,
+    compare: false,
+    compareX: 50,
+    hover: false,
+    narrow: false,
+    gallery: [
+      { id: 5, mode: 'S' }, { id: 4, mode: 'C' }, { id: 3, mode: 'U' },
+      { id: 2, mode: 'S' }, { id: 1, mode: 'S' }
+    ],
+    selected: 5
+  };
+
+  componentDidMount() {
+    this.onResize = () => this.setState({ narrow: window.innerWidth < 1120 });
+    this.onResize();
+    window.addEventListener('resize', this.onResize);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onResize);
+    clearInterval(this.tick);
+  }
+
+  setMode = (mode) => this.setState((s) => ({
+    mode, menu: null, compare: false,
+    status: s.status === 'generating' ? 'generating' : (s.hasPhoto ? (mode === 'Set' && s.status === 'result' ? 'result' : 'photo') : 'empty')
+  }));
+
+  seg = (active) => 'flex:1;height:30px;padding:0 10px;border:none;border-radius:8px;font-size:14px;font-weight:600;position:relative;transition:background 150ms ease-out,color 150ms ease-out;' +
+    (active
+      ? 'background:#FFFFFF;color:#111111;box-shadow:0 1px 2px rgba(0,0,0,0.06)'
+      : 'background:transparent;color:#6B6B6B');
+
+  tab = (active) => 'flex:1;height:30px;border:none;border-radius:8px;font-size:14px;font-weight:600;transition:background 150ms ease-out,color 150ms ease-out;' +
+    (active ? 'background:#FFFFFF;color:#111111;box-shadow:0 1px 2px rgba(0,0,0,0.06)' : 'background:transparent;color:#6B6B6B');
+
+  swatch = (active) => 'position:relative;width:32px;height:32px;border-radius:50%;padding:0;background:#FFFFFF;cursor:pointer;transition:box-shadow 150ms ease-out;border:' +
+    (active ? '2px solid var(--acc,#FF7F23)' : '1px solid #E6E6E6');
+
+  menuItem = (active) => 'width:100%;height:36px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;border:none;border-radius:6px;background:transparent;font-size:14px;text-align:left;color:' +
+    (active ? '#111111' : '#111111');
+
+  ddStyle = (open) => 'width:100%;height:40px;padding:0 10px 0 12px;display:flex;align-items:center;justify-content:space-between;background:#FFFFFF;border-radius:8px;font-size:14px;color:#111111;transition:border-color 150ms ease-out;border:1px solid ' + (open ? '#111111' : '#E6E6E6');
+
+  loadFile = (file, key) => {
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    if (key === 'bg') this.setState({ bgImage: url, bgImageName: file.name });
+    else this.setState({ photoUrl: url, photoName: file.name, hasPhoto: true, status: 'photo', pts: [], closed: false, compare: false });
+  };
+
+  generate = () => {
+    clearInterval(this.tick);
+    this.setState({ status: 'generating', progress: 4, phase: 0, compare: false, menu: null });
+    const started = Date.now();
+    this.tick = setInterval(() => {
+      const t = (Date.now() - started) / 2800;
+      if (t >= 1) {
+        clearInterval(this.tick);
+        const id = Date.now();
+        const badge = this.state.mode === 'Set' ? 'S' : this.state.mode === 'Unset' ? 'U' : 'C';
+        this.setState((s) => ({
+          status: 'result', progress: 100,
+          gallery: [{ id, mode: badge }].concat(s.gallery).slice(0, 14), selected: id
+        }));
+      } else {
+        this.setState({ progress: Math.round(t * 100), phase: Math.min(2, Math.floor(t * 3)) });
+      }
+    }, 120);
+  };
+
+  renderVals() {
+    const s = this.state;
+    const isSet = s.mode === 'Set', isUnset = s.mode === 'Unset', isClean = s.mode === 'CleanUp';
+    const generating = s.status === 'generating';
+    const showResult = s.status === 'result' && !generating;
+    const showError = s.status === 'error';
+    const showEmpty = !s.hasPhoto && !generating && !showError;
+    const showInput = s.hasPhoto && !showResult && !showError;
+    const cutOk = !!s.cut;
+
+    let ctaHint = '';
+    if (isUnset) {
+      const miss = [];
+      if (!s.hasPhoto) miss.push('a photo');
+      if (!s.closed) miss.push('a closed stone area');
+      if (!cutOk) miss.push('a stone cut');
+      if (miss.length === 1) ctaHint = 'Add ' + miss[0] + ' to generate.';
+      else if (miss.length > 1) ctaHint = 'Add ' + miss.slice(0, -1).join(', ') + ' and ' + miss[miss.length - 1] + ' to generate.';
+    } else if (!s.hasPhoto) {
+      ctaHint = 'Upload a photo to generate.';
+    }
+    const ctaDisabled = generating || !!ctaHint;
+    const ctaLabel = generating ? 'Generating…' : isClean ? 'Clean up' : 'Generate';
+    const ctaStyle = 'width:100%;height:44px;border:none;border-radius:8px;font-size:14px;font-weight:600;transition:background 150ms ease-out;' +
+      (ctaDisabled
+        ? 'background:#F6F6F6;color:#A8A8A8;cursor:not-allowed'
+        : 'background:var(--acc,#FF7F23);color:#FFFFFF;cursor:pointer');
+
+    const polyPts = s.pts.map((p) => p.x + ',' + p.y).join(' ');
+    const rgb = (() => {
+      const h = (s.customColour || '#000000').replace('#', '');
+      const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16) || 0;
+      return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+    })();
+    const setRgb = (part) => (e) => {
+      const v = Math.max(0, Math.min(255, parseInt(e.target.value, 10) || 0));
+      const next = Object.assign({}, rgb, { [part]: v });
+      const hex = '#' + [next.r, next.g, next.b].map((x) => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+      this.setState({ customColour: hex, hexField: hex, bgColour: 'Custom' });
+    };
+
+    const activeBgHex = s.bgColour === 'Custom' ? s.customColour : BG_HEX[s.bgColour];
+    const bgLabelMap = { White: 'White background', Grey: 'Grey background', Black: 'Black background', Custom: 'Custom ' + s.customColour };
+
+    return {
+      accent: this.props.accent || '#FF7F23',
+      panelW: s.narrow ? '312px' : '360px',
+      isSet, isUnset, isClean,
+      needsMetal: isSet || isUnset,
+      needsBg: isSet || isUnset,
+      setModeSet: () => this.setMode('Set'),
+      setModeUnset: () => this.setMode('Unset'),
+      setModeClean: () => this.setMode('CleanUp'),
+      segSet: this.seg(isSet), segUnset: this.seg(isUnset), segClean: this.seg(isClean),
+
+      hasPhoto: s.hasPhoto, noPhoto: !s.hasPhoto,
+      photoUrl: s.photoUrl, noPhotoUrl: !s.photoUrl, photoName: s.photoName,
+      fileRef: (el) => { this.file = el; },
+      openPicker: () => this.file && this.file.click(),
+      onPickPhoto: (e) => this.loadFile(e.target.files && e.target.files[0]),
+      removePhoto: () => this.setState({ hasPhoto: false, photoUrl: null, photoName: null, status: 'empty', pts: [], closed: false, compare: false }),
+      onDragOver: (e) => { e.preventDefault(); if (!s.dragOver) this.setState({ dragOver: true }); },
+      onDragLeave: () => this.setState({ dragOver: false }),
+      onDrop: (e) => { e.preventDefault(); this.setState({ dragOver: false }); this.loadFile(e.dataTransfer.files && e.dataTransfer.files[0]); },
+      dropStyle: 'height:140px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color 150ms ease-out,background 150ms ease-out;border:1px dashed ' +
+        (s.dragOver ? 'var(--acc,#FF7F23);background:#FFF1E6' : '#E6E6E6;background:#F6F6F6'),
+
+      toggleNecklace: () => this.setState({ necklace: !s.necklace }),
+      switchTrack: 'flex:none;position:relative;width:40px;height:24px;border:none;border-radius:999px;padding:0;transition:background 150ms ease-out;background:' + (s.necklace ? 'var(--acc,#FF7F23)' : '#E6E6E6'),
+      switchKnob: 'position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#FFFFFF;transition:transform 150ms ease-out;transform:translateX(' + (s.necklace ? '16px' : '0') + ')',
+
+      metal: s.metal, cut: s.cut,
+      metalOpen: s.menu === 'metal', cutOpen: s.menu === 'cut',
+      metalBtn: this.ddStyle(s.menu === 'metal'), cutBtn: this.ddStyle(s.menu === 'cut'),
+      toggleMetal: () => this.setState({ menu: s.menu === 'metal' ? null : 'metal' }),
+      toggleCut: () => this.setState({ menu: s.menu === 'cut' ? null : 'cut' }),
+      closeMenus: () => this.setState({ menu: null }),
+      metals: METALS.map((label) => ({
+        label, active: label === s.metal, style: this.menuItem(label === s.metal),
+        pick: () => this.setState({ metal: label, menu: null })
+      })),
+      cuts: CUTS.map((label) => ({
+        label, active: label === s.cut, style: this.menuItem(label === s.cut),
+        pick: () => this.setState({ cut: label, menu: null })
+      })),
+
+      bgIsColour: s.bgTab === 'Colour', bgIsImage: s.bgTab === 'Image', bgIsAi: s.bgTab === 'AI',
+      tabColour: this.tab(s.bgTab === 'Colour'), tabImage: this.tab(s.bgTab === 'Image'), tabAi: this.tab(s.bgTab === 'AI'),
+      bgTabColour: () => this.setState({ bgTab: 'Colour', menu: null }),
+      bgTabImage: () => this.setState({ bgTab: 'Image', menu: null }),
+      bgTabAi: () => this.setState({ bgTab: 'AI', menu: null }),
+      swWhite: this.swatch(s.bgColour === 'White'), swGrey: this.swatch(s.bgColour === 'Grey'),
+      swBlack: this.swatch(s.bgColour === 'Black'), swCustom: this.swatch(s.bgColour === 'Custom'),
+      pickWhite: () => this.setState({ bgColour: 'White' }),
+      pickGrey: () => this.setState({ bgColour: 'Grey' }),
+      pickBlack: () => this.setState({ bgColour: 'Black' }),
+      bgColourLabel: bgLabelMap[s.bgColour] || '',
+      customColour: s.customColour, hexField: s.hexField,
+      customOpen: s.menu === 'custom',
+      openCustom: () => this.setState({ menu: s.menu === 'custom' ? null : 'custom', bgColour: 'Custom' }),
+      onCustomColour: (e) => this.setState({ customColour: e.target.value.toUpperCase(), hexField: e.target.value.toUpperCase(), bgColour: 'Custom' }),
+      onHexInput: (e) => {
+        const v = e.target.value.trim();
+        const ok = /^#?[0-9a-f]{6}$/i.test(v);
+        this.setState({ hexField: v, customColour: ok ? (v[0] === '#' ? v : '#' + v).toUpperCase() : s.customColour, bgColour: 'Custom' });
+      },
+      rVal: rgb.r, gVal: rgb.g, bVal: rgb.b,
+      onR: setRgb('r'), onG: setRgb('g'), onB: setRgb('b'),
+      applyCustom: () => this.setState({ menu: null, bgColour: 'Custom' }),
+
+      bgImage: s.bgImage, bgImageName: s.bgImageName,
+      hasBgImage: !!s.bgImage, noBgImage: !s.bgImage,
+      bgFileRef: (el) => { this.bgFile = el; },
+      openBgPicker: () => this.bgFile && this.bgFile.click(),
+      onPickBg: (e) => this.loadFile(e.target.files && e.target.files[0], 'bg'),
+      removeBgImage: () => this.setState({ bgImage: null, bgImageName: null }),
+      aiPrompt: s.aiPrompt,
+      onAiPrompt: (e) => this.setState({ aiPrompt: e.target.value }),
+      generateBg: () => this.setState({ aiDone: true }),
+      aiDone: s.aiDone,
+      aiThumb: 'position:relative;width:96px;height:96px;border-radius:12px;padding:0;display:grid;place-items:center;overflow:hidden;cursor:pointer;background:#F6F6F6;border:2px solid var(--acc,#FF7F23)',
+      pickAiResult: () => this.setState({ aiDone: true }),
+
+      ctaHint, ctaDisabled, ctaLabel, ctaStyle, generate: this.generate,
+
+      canvasRef: (el) => { this.canvas = el; },
+      showEmpty, showInput, showResult, showError, generating,
+      inputLayer: 'position:absolute;inset:0;background:' + (s.bgColour === 'Black' ? '#111111' : '#FFFFFF'),
+      resultBg: activeBgHex,
+      resultClip: 'position:absolute;inset:0',
+      compare: s.compare, compareX: s.compareX,
+      compareLeft: 'width:' + s.compareX + '%',
+      compareBar: 'position:absolute;top:0;bottom:0;left:' + s.compareX + '%;width:2px;background:var(--acc,#FF7F23);transform:translateX(-1px)',
+      onCompare: (e) => this.setState({ compareX: Number(e.target.value) }),
+      toggleCompare: () => this.setState({ compare: !s.compare }),
+      compareBtn: 'height:32px;padding:0 12px;display:flex;align-items:center;gap:6px;border:none;border-radius:8px;font-size:14px;cursor:pointer;' +
+        (s.compare ? 'background:#F1F1F1;color:#111111' : 'background:transparent;color:#111111'),
+      useAsInput: () => this.setState({ status: 'photo', compare: false, pts: [], closed: false }),
+      showToolbar: showResult && s.hover,
+      hoverOn: () => this.setState({ hover: true }),
+      hoverOff: () => this.setState({ hover: false }),
+
+      showLasso: isUnset && s.hasPhoto && !generating && !showResult && !showError,
+      pts: s.pts, polyPts, closed: s.closed, open: !s.closed && s.pts.length > 1,
+      onCanvasClick: (e) => {
+        if (s.closed) return;
+        const r = e.currentTarget.getBoundingClientRect();
+        const x = Math.round(e.clientX - r.left), y = Math.round(e.clientY - r.top);
+        const first = s.pts[0];
+        if (first && s.pts.length > 2 && Math.hypot(first.x - x, first.y - y) < 14) { this.setState({ closed: true }); return; }
+        this.setState({ pts: s.pts.concat([{ x, y }]) });
+      },
+      closeShape: () => { if (s.pts.length > 2) this.setState({ closed: true }); },
+      undoPoint: (e) => { e.stopPropagation(); this.setState({ pts: s.pts.slice(0, -1), closed: false }); },
+      resetShape: (e) => { e.stopPropagation(); this.setState({ pts: [], closed: false }); },
+      lassoStatus: s.closed ? 'Area selected ✓' : s.pts.length ? s.pts.length + ' points — click the first point to close' : 'No area selected',
+      lassoBadge: s.closed ? 'background:#FFF1E6;color:#E86A10;font-weight:600' : 'background:#F6F6F6;color:#6B6B6B',
+
+      progressW: 'width:' + s.progress + '%',
+      statusEl: React.createElement('div', {
+        key: s.phase,
+        style: {
+          animation: 'pvStatus 1000ms ease-out both', fontSize: 14, color: '#111111',
+          background: '#FFFFFF', border: '1px solid #E6E6E6', borderRadius: 8,
+          padding: '8px 14px', boxShadow: '0 8px 24px rgba(0,0,0,0.08)'
+        }
+      }, PHASES[s.phase]),
+
+      gallery: s.gallery.map((g) => ({
+        mode: g.mode,
+        pick: () => this.setState({ selected: g.id, status: 'result', compare: false }),
+        style: 'position:relative;flex:none;width:80px;height:80px;border-radius:10px;padding:0;background:#FFFFFF;cursor:pointer;transition:border-color 150ms ease-out;border:' +
+          (s.selected === g.id ? '2px solid var(--acc,#FF7F23)' : '1px solid #E6E6E6'),
+        badge: 'position:absolute;top:5px;left:5px;width:18px;height:18px;border-radius:5px;display:grid;place-items:center;background:#FFFFFF;border:1px solid #E6E6E6;font-size:10px;font-weight:600;color:#6B6B6B'
+      })),
+      hasGallery: s.gallery.length > 0, noGallery: s.gallery.length === 0,
+      galleryCount: s.gallery.length + ' renders'
+    };
+  }
+}
+</script>
+</body>
+</html>
